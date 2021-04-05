@@ -7,30 +7,34 @@
 int isOpen = 0;
 
 
-gram_node* insert_gram(gram_node* root, gram_node* next){
+gram_node* insert_gram(gram_node* root, char* next){
 	
     if(root == NULL){//initialize the first root of the tree
-        root = next;
-        root->word = next->word;
+        root = malloc(sizeof(gram_node));
+        root->word = next;
         root->count = 1;
         root->right = NULL;
         root->left = NULL;
         root->bigrams = NULL;
+        return root;
     } else{
-    	printf("Next word: %s... Root word: %s %d\n", next->word, root->word, root->count);
-        int result = compareStrings(root->word, next->word);//check if word is same or should go right or left
-        printf("result was: %d\n", result);
+    	//printf("Next word: %s... Root word: %s\n", next, root->word);
+        int result = compareStrings(root->word, next);//check if word is same or should go right or left
+        //printf("result was: %d\n", result);
         if(result == 3){	//word is same
            root->count++;
-           printf("%s count is now %d\n", root->word, root->count);
+           //printf("%s count is now %d\n", root->word, root->count);
            return root;
         }else if(result == 1){	//word is less than root
             //insert left
             if(root->left == NULL){	//if the left side is null insert it there, other wise navigate further
-                next->left = NULL;
-                next->right = NULL;
-                next->count++;
-                root->left = next;
+                gram_node* new_gram = malloc(sizeof(gram_node));
+                new_gram->word = next;
+                new_gram->left = NULL;
+                new_gram->right = NULL;
+                new_gram->bigrams = NULL;
+                new_gram->count = 1;
+                root->left = new_gram;
                 return root->left;
             } else{
                 insert_gram(root->left, next);
@@ -38,10 +42,13 @@ gram_node* insert_gram(gram_node* root, gram_node* next){
         }else if(result == 0){
             //insert right
             if(root->right == NULL){
-                next->left = NULL;
-                next->right = NULL;
-                next->count++;
-                root->right = next;
+                gram_node* new_gram = malloc(sizeof(gram_node));
+                new_gram->word = next;
+                new_gram->left = NULL;
+                new_gram->right = NULL;
+                new_gram->bigrams = NULL;
+                new_gram->count = 1;
+                root->right = new_gram;
                 return root->right;
             } else{
                 insert_gram(root->right, next);

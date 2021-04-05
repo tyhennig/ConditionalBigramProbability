@@ -11,7 +11,7 @@ typedef struct gram_node{
     struct gram_node* bigrams;
 } gram_node;
 
-gram_node* insert_gram(gram_node* root, gram_node* next);
+gram_node* insert_gram(gram_node* root, char* next);
 void printUnigrams(gram_node* root, FILE *uni, FILE *bi, FILE *cp);
 void printBigrams(FILE *f, FILE *cp, gram_node* root, const char* s, int n);
 int compareStrings(const char* root_word, const char* new_word);

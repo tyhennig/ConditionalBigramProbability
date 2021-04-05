@@ -2,6 +2,7 @@
 Written by: Tyler Hennig
 Title: Bigram Conditional Probability Calculator
 For: Operating Systems Homework 2
+Last Update: 4/4/2021
 
 *******************************************************************************/
 #include <stdio.h>
@@ -34,6 +35,8 @@ gram_node* copyGram(gram_node* g){
 
 int main(int argc, char *argv[])
 {
+
+    double times[argc];
 for(int file_index = 1; argv[file_index]; file_index++){
 
 	FILE *fp;
@@ -50,6 +53,7 @@ for(int file_index = 1; argv[file_index]; file_index++){
     
     gram_node* root = NULL; //pointers of current node and previous node
     gram_node* prev = NULL;
+    gram_node* next = NULL;
     
 
     //copy the argv[1] into a new variable called file_name
@@ -80,27 +84,22 @@ for(int file_index = 1; argv[file_index]; file_index++){
         for(int i = 0; str[i]; i++){
             str[i] = tolower(str[i]);
             new_word[i] = str[i];
-            //printf("Inserting Letter %c\n", str[i]);
         }
         new_word[char_count + 1] = '\000'; //assign null character
-        
-        gram_node* next = malloc(sizeof(gram_node));
-        next->count = 0;
-        
-        next->word = new_word;
+                
         //check if tree has started, if not start. Otherwise, insert gram into tree.
         //Insert the current unigram into the previous gram_node's bigram tree;
         if(!started){
             printf("starting...\n");
-            root = insert_gram(NULL, next);
+            root = insert_gram(NULL, new_word);
+            next = root;
             started = 1;
         }else{
-        	printf("inserting next: %s into root: %s\n", next->word, root->word);
-            next = insert_gram(root, next);
+            next = insert_gram(root, new_word);
             if(prev->bigrams == NULL){
-                prev->bigrams = copyGram(next);
+                prev->bigrams = copyGram(next); //make a copy of the gram to be stored in the prev's bigram tree
             } else{
-                insert_gram(prev->bigrams, copyGram(next));
+                insert_gram(prev->bigrams, new_word);
             }
         }
         
@@ -133,16 +132,21 @@ for(int file_index = 1; argv[file_index]; file_index++){
     fclose(uni);
     fclose(bi);
     fclose(cp);
+
+    file_name[file_char_count-3] = '\000';
     
     clock_t end = clock();
     double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
-    printf("Time taken: %f\n\n", time_spent);
-    //root = insert_unigram(NULL, "Hello");
+    times[file_index-1] = time_spent;
     
+    //free the used tree memory
     navigateUnigramTree(root);
     deallocateUnigramTree(root);
     
     free(file_name);
     
   }  
+  for(int i = 0; times[i]; i++){
+    printf("Time taken: %f seconds of CPU time for file %s\n\n", times[i], argv[i+1]);
+  }
 }
